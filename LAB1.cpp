@@ -3,6 +3,7 @@
 #include <random>
 #include <chrono>
 #include <time.h>
+#include <omp.h>
 
 using namespace std;
 using namespace std::chrono;
@@ -94,12 +95,15 @@ public:
                 file2 >> matrix2[i][j];
             }
         }
-
-        for (int i = 0; i < size; ++i) {
-            for (int j = 0; j < size; ++j) {
-                res_matrix[i][j] = 0;
-                for (int k = 0; k < size; ++k) {
-                    res_matrix[i][j] += matrix1[i][k] * matrix2[k][j];
+        #pragma omp parallel num_threads(2)
+        {
+            #pragma omp for
+            for (int i = 0; i < size; ++i) {
+                for (int j = 0; j < size; ++j) {
+                    res_matrix[i][j] = 0;
+                    for (int k = 0; k < size; ++k) {
+                        res_matrix[i][j] += matrix1[i][k] * matrix2[k][j];
+                    }
                 }
             }
         }
